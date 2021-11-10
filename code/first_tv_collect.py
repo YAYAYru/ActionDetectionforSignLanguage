@@ -7,6 +7,14 @@ import mediapipe as mp
 
 from first_tv_module import mediapipe_detection, draw_styled_landmarks, mp_holistic, mp_drawing, extract_keypoints, actions, no_sequences, sequence_length, DATA_PATH
 
+for action in actions: 
+    for sequence in range(no_sequences):
+        try: 
+            os.makedirs(os.path.join(DATA_PATH, action, str(sequence)))
+        except:
+            pass
+
+
 cap = cv2.VideoCapture(0)
 
 

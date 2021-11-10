@@ -5,12 +5,13 @@ from matplotlib import pyplot as plt
 import time
 import mediapipe as mp
 path_model = '../model/action_day_sign_language1.h5'
-dataset_foldername = 'MP_Data_day_sign_language'
-actions = np.array(['day', 'sign', 'language'])
-DATA_PATH = os.path.join('../data/' + dataset_foldername)
+dataset_foldername = 'MP_Data_day_sign_language1'
+actions = np.array(['day', 'sign', 'language1'])
+DATA_PATH = os.path.join('../data/npy/' + dataset_foldername)
+
 #no_sequences = 30
 #sequence_length = 30
-no_sequences = 5
+no_sequences = 2 # count examples
 sequence_length = 30
 
 
@@ -63,12 +64,12 @@ def extract_keypoints(results):
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
-from tensorflow.keras.callbacks import TensorBoard
-
-model = Sequential()
-model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(30,1662)))
-model.add(LSTM(128, return_sequences=True, activation='relu'))
-model.add(LSTM(64, return_sequences=False, activation='relu'))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(32, activation='relu'))
-model.add(Dense(actions.shape[0], activation='softmax'))
+def model_sequential():
+    model = Sequential()
+    model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(30,1662)))
+    model.add(LSTM(128, return_sequences=True, activation='relu'))
+    model.add(LSTM(64, return_sequences=False, activation='relu'))
+    model.add(Dense(64, activation='relu'))
+    model.add(Dense(32, activation='relu'))
+    model.add(Dense(actions.shape[0], activation='softmax'))
+    return model
