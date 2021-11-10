@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 import time
 import mediapipe as mp
 
-from first_tv_module import mediapipe_detection, draw_styled_landmarks, mp_holistic, mp_drawing, extract_keypoints, actions, model, no_sequences, sequence_length, DATA_PATH
+from first_tv_module import *
 
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
@@ -45,7 +45,7 @@ model.fit(X_train, y_train, epochs=2000, callbacks=[tb_callback])
 model.summary()
 
 res = model.predict(X_test)
-model.save('../model/action_day_sign_language.h5')
+model.save(path_model)
 
 from sklearn.metrics import multilabel_confusion_matrix, accuracy_score
 

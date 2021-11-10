@@ -4,8 +4,8 @@ import os
 from matplotlib import pyplot as plt
 import time
 import mediapipe as mp
-dataset_foldername = 'MP_Data_day_sign_language1'
-#actions = np.array(['day', 'sign', 'language', 'first', 'TV', 'channel'])
+path_model = '../model/action_day_sign_language1.h5'
+dataset_foldername = 'MP_Data_day_sign_language'
 actions = np.array(['day', 'sign', 'language'])
 DATA_PATH = os.path.join('../data/' + dataset_foldername)
 #no_sequences = 30

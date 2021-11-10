@@ -1,5 +1,4 @@
-from first_tv_module import mediapipe_detection, draw_styled_landmarks, mp_holistic, mp_drawing, extract_keypoints,actions
-
+from first_tv_module import *
 import cv2
 import numpy as np
 import os
@@ -21,7 +20,7 @@ model.add(Dense(64, activation='relu'))
 model.add(Dense(32, activation='relu'))
 model.add(Dense(actions.shape[0], activation='softmax'))
 
-model.load_weights('../model/action_day_sign_language.h5')
+model.load_weights(path_model)
 
 
 colors = [(245,117,16), (117,245,16), (16,117,245)]
