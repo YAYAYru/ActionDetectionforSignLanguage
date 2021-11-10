@@ -4,9 +4,9 @@ import os
 from matplotlib import pyplot as plt
 import time
 import mediapipe as mp
-path_model = '../model/action_day_sign_language1.h5'
-dataset_foldername = 'MP_Data_day_sign_language1'
-actions = np.array(['day', 'sign', 'language1'])
+path_model = '../model/not_begin_trans_end_sign.h5'
+dataset_foldername = 'not_begin_trans_end_sign'
+actions = np.array(['not', 'begin', 'trans', 'end', 'sign'])
 DATA_PATH = os.path.join('../data/npy/' + dataset_foldername)
 
 #no_sequences = 30
@@ -66,10 +66,12 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 def model_sequential():
     model = Sequential()
-    model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(30,1662)))
+    model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(30,1662))) #468*3+33*4+21*3+21*3=1662
     model.add(LSTM(128, return_sequences=True, activation='relu'))
     model.add(LSTM(64, return_sequences=False, activation='relu'))
     model.add(Dense(64, activation='relu'))
     model.add(Dense(32, activation='relu'))
-    model.add(Dense(actions.shape[0], activation='softmax'))
+    model.add(Dense(actions.shape[0], activation='softmax'))    
+    model.summary()
+
     return model
