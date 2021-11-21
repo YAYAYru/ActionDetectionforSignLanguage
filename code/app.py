@@ -5,9 +5,10 @@ import random
 import time
 # BUG Когда закончится только видеофайл без нажатия на q, то есть появится какая-то ошибка
 # File "D:\git\GitHub\YAYAYru\ActionDetectionforSignLanguage\code\first_tv_module.py", line 22, in mediapipe_detection
-path_videofile = "../data/video/63_5_1.mp4" 
+#path_videofile = "../data/video/63_5_1.mp4" 
+#path_videofile = "//Users/volley84/yayay/git/github/yayayru/slsru_ml_tag/data/video/sl_sentence_DianaB_DimaG/ss1_9_c5_1.mp4"
 cap = cv2.VideoCapture(0) # camera
-# cap = cv2.VideoCapture(path_videofile)
+#cap = cv2.VideoCapture(path_videofile)
 
 model = model_sequential()
 model.load_weights(path_model)
@@ -53,7 +54,7 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
         ret, frame = cap.read()
         t_sec = T_SEC_TO_START - int(time.time() - T_SEC_BEGIN_RUN)  
         print("t_sec", t_sec)
-        if t_sec<0 and t_sec>-10:
+        if t_sec<0 and t_sec>-20:
             # Make detections
             frame, results = mediapipe_detection(frame, holistic)
             print(results)
@@ -68,7 +69,7 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
             #sequence.append(keypoints)
             #sequence = sequence[-30:]
             
-            if len(sequence) == 30:
+            if len(sequence) == WINDOW_SIZE:
                 res = model.predict(np.expand_dims(sequence, axis=0))[0]
                 print(actions[np.argmax(res)])
                 

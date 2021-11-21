@@ -4,9 +4,10 @@ import numpy as np
 import random
 # BUG Когда закончится только видеофайл без нажатия на q, то есть появится какая-то ошибка
 # File "D:\git\GitHub\YAYAYru\ActionDetectionforSignLanguage\code\first_tv_module.py", line 22, in mediapipe_detection
-path_videofile = "../data/video/63_5_1.mp4" 
-# cap = cv2.VideoCapture(0) # camera
-cap = cv2.VideoCapture(path_videofile)
+# path_videofile = "../data/video/63_5_1.mp4"
+path_videofile = "//Users/volley84/yayay/git/github/yayayru/slsru_ml_tag/data/video/sl_sentence_DianaB_DimaG/ss1_9_c5_1.mp4"
+cap = cv2.VideoCapture(0) # camera
+# cap = cv2.VideoCapture(path_videofile)
 
 model = model_sequential()
 model.load_weights(path_model)
