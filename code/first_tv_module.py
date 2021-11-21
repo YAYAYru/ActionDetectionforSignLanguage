@@ -4,9 +4,9 @@ import os
 from matplotlib import pyplot as plt
 import time
 import mediapipe as mp
-path_model = '../model/not_begin_trans_end_sign.h5'
+path_model = '../model/action_day_sign_language.h5'
 dataset_foldername = 'not_begin_trans_end_sign'
-actions = np.array(['not', 'begin', 'trans', 'end', 'sign'])
+actions = np.array(['day', 'sign', 'language'])
 DATA_PATH = os.path.join('../data/npy/' + dataset_foldername)
 
 #no_sequences = 30
