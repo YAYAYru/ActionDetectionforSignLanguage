@@ -6,12 +6,12 @@ import os
 from matplotlib import pyplot as plt
 import time
 import mediapipe as mp
-cap = cv2.VideoCapture(0)
-
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
-from tensorflow.keras.callbacks import TensorBoard
 
+THRESHOLD = 0.8
+PATH_VIDEO = "/Users/volley84/yayay/git/github/yayayru/slsru_ml_tag/data/video/sl_sentence_DianaB_DimaG/ss1_9_c5.mp4"
+WINDOW_SIZE = 30
 
 model = Sequential()
 model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(30,1662)))
@@ -43,8 +43,7 @@ def extract_keypoints(results):
 # 1. New detection variables
 sequence = []
 sentence = []
-threshold = 0.8
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(PATH_VIDEO)
 # Set mediapipe model 
 with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
     while cap.isOpened():
@@ -62,17 +61,17 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
         # 2. Prediction logic
         keypoints = extract_keypoints(results)
         sequence.insert(0,keypoints)
-        sequence = sequence[:30]
+        sequence = sequence[:WINDOW_SIZE]
         #sequence.append(keypoints)
         #sequence = sequence[-30:]
         
-        if len(sequence) == 30:
+        if len(sequence) == WINDOW_SIZE:
             res = model.predict(np.expand_dims(sequence, axis=0))[0]
             print(actions[np.argmax(res)])
             
             
         #3. Viz logic
-            if res[np.argmax(res)] > threshold: 
+            if res[np.argmax(res)] > THRESHOLD: 
                 if len(sentence) > 0: 
                     if actions[np.argmax(res)] != sentence[-1]:
                         sentence.append(actions[np.argmax(res)])
