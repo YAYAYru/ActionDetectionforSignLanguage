@@ -11,7 +11,6 @@ from tensorflow.keras.layers import LSTM, Dense
 
 THRESHOLD = 0.8
 PATH_VIDEO = "/Users/volley84/yayay/git/github/yayayru/slsru_ml_tag/data/video/sl_sentence_DianaB_DimaG/ss1_9_c5.mp4"
-WINDOW_SIZE = 30
 
 model = Sequential()
 model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(30,1662)))
@@ -84,6 +83,9 @@ def visual(image, res, sentence):
     image = prob_viz(res, actions, image, colors)
     return image, sentence
 
+WINDOW_SIZE = 30
+T_SEC_BEGIN_RUN = time.time()
+T_SEC_TO_START = 5
 
 with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
     while cap.isOpened():
@@ -91,24 +93,32 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
         # Read feed
         ret, frame = cap.read()
 
-        image, keypoints = video2keypoints_mediapipe(frame, holistic)
+        t_sec = T_SEC_TO_START - int(time.time() - T_SEC_BEGIN_RUN)  
+        print("t_sec", t_sec)
 
-        sequence.insert(0,keypoints)
-        sequence = sequence[:WINDOW_SIZE]
-        #sequence.append(keypoints)
-        #sequence = sequence[-30:]
-        
-        if len(sequence) == WINDOW_SIZE:
-            res = model.predict(np.expand_dims(sequence, axis=0))[0]
-            print(actions[np.argmax(res)])      
-            image, sentence = visual(image, res, sentence) 
+        if t_sec<0 and t_sec>-20:
+            frame, keypoints = video2keypoints_mediapipe(frame, holistic)
 
-        cv2.rectangle(image, (0,0), (640, 40), (245, 117, 16), -1)
-        cv2.putText(image, ' '.join(sentence), (3,30), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+            sequence.insert(0,keypoints)
+            sequence = sequence[:WINDOW_SIZE]
+            #sequence.append(keypoints)
+            #sequence = sequence[-30:]
+            
+            if len(sequence) == WINDOW_SIZE:
+                res = model.predict(np.expand_dims(sequence, axis=0))[0]
+                print(actions[np.argmax(res)])      
+                frame, sentence = visual(frame, res, sentence) 
+
+            cv2.rectangle(frame, (0,0), (640, 40), (245, 117, 16), -1)
+            cv2.putText(frame, ' '.join(sentence), (3,30), 
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+        elif t_sec>=0:
+            putText_center(frame, str(abs(t_sec)))
+        else :
+            putText_center(frame, "Predict")
 
         # Show to screen
-        cv2.imshow('OpenCV Feed', image)
+        cv2.imshow('OpenCV Feed', frame)
 
         # Break gracefully
         if cv2.waitKey(10) & 0xFF == ord('q'):
