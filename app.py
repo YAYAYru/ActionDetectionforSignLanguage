@@ -42,10 +42,12 @@ def extract_keypoints(results):
 # 1. New detection variables
 sequence = []
 sentence = []
-cap = cv2.VideoCapture(PATH_VIDEO)
+#cap = cv2.VideoCapture(PATH_VIDEO)
 # Set mediapipe model 
+cap = cv2.VideoCapture(0)
 
-def putText_center(frame, text):
+
+def putText_center(frame, text, color):
         font = cv2.FONT_HERSHEY_PLAIN
         textsize = cv2.getTextSize(text, font, 1, 2)[0]
 
@@ -53,7 +55,8 @@ def putText_center(frame, text):
         textX = int((frame.shape[1] - textsize[0]) / 2)
         textY = int((frame.shape[0] + textsize[1]) / 2)
         
-        cv2.putText(frame, text, (textX, textY), font, 10, (255, 255, 255), 10)
+
+        cv2.putText(frame, text, (textX, textY), font, 10, color, 10)
 
 def video2keypoints_mediapipe(frame, holistic):
     # Make detections
@@ -86,6 +89,7 @@ def visual(image, res, sentence):
 WINDOW_SIZE = 30
 T_SEC_BEGIN_RUN = time.time()
 T_SEC_TO_START = 5
+T_SEC_REC = 3
 
 with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
     while cap.isOpened():
@@ -96,7 +100,7 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
         t_sec = T_SEC_TO_START - int(time.time() - T_SEC_BEGIN_RUN)  
         print("t_sec", t_sec)
 
-        if t_sec<0 and t_sec>-20:
+        if t_sec<0 and t_sec>-T_SEC_REC:
             frame, keypoints = video2keypoints_mediapipe(frame, holistic)
 
             sequence.insert(0,keypoints)
@@ -113,9 +117,12 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
             cv2.putText(frame, ' '.join(sentence), (3,30), 
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
         elif t_sec>=0:
-            putText_center(frame, str(abs(t_sec)))
-        else :
-            putText_center(frame, "Predict")
+            putText_center(frame, str(abs(t_sec)), (255, 255, 255))
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+        else :            
+            #frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+            putText_center(frame, "Predict", (0, 255, 0))
+
 
         # Show to screen
         cv2.imshow('OpenCV Feed', frame)
