@@ -47,7 +47,7 @@ sentence = []
 cap = cv2.VideoCapture(0)
 
 
-def putText_center(frame, text, color):
+def putText_center(frame, text, color, size):
         font = cv2.FONT_HERSHEY_PLAIN
         textsize = cv2.getTextSize(text, font, 1, 2)[0]
 
@@ -56,7 +56,7 @@ def putText_center(frame, text, color):
         textY = int((frame.shape[0] + textsize[1]) / 2)
         
 
-        cv2.putText(frame, text, (textX, textY), font, 10, color, 10)
+        cv2.putText(frame, text, (textX, textY), font, size, color, 7)
 
 def video2keypoints_mediapipe(frame, holistic):
     # Make detections
@@ -88,17 +88,18 @@ def visual(image, res, sentence):
 
 WINDOW_SIZE = 30
 T_SEC_BEGIN_RUN = time.time()
-T_SEC_TO_START = 5
-T_SEC_REC = 3
-
+T_SEC_TO_START = 200
+T_SEC_REC = 31
+id_frame = 0
+predict_word = "Not"
 with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
     while cap.isOpened():
 
         # Read feed
         ret, frame = cap.read()
-
-        t_sec = T_SEC_TO_START - int(time.time() - T_SEC_BEGIN_RUN)  
-        print("t_sec", t_sec)
+        #t_sec = T_SEC_TO_START - int(time.time() - T_SEC_BEGIN_RUN)  
+        t_sec = T_SEC_TO_START - id_frame
+        #print("t_sec", t_sec)
 
         if t_sec<0 and t_sec>-T_SEC_REC:
             frame, keypoints = video2keypoints_mediapipe(frame, holistic)
@@ -110,26 +111,30 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
             
             if len(sequence) == WINDOW_SIZE:
                 res = model.predict(np.expand_dims(sequence, axis=0))[0]
-                print(actions[np.argmax(res)])      
+                predict_word = actions[np.argmax(res)]    
+                print("predict_word", predict_word)
                 frame, sentence = visual(frame, res, sentence) 
 
             cv2.rectangle(frame, (0,0), (640, 40), (245, 117, 16), -1)
             cv2.putText(frame, ' '.join(sentence), (3,30), 
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
         elif t_sec>=0:
-            putText_center(frame, str(abs(t_sec)), (255, 255, 255))
+            putText_center(frame, str(abs(t_sec)), (255, 255, 255),10)
             frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
         else :            
             #frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-            putText_center(frame, "Predict", (0, 255, 0))
+            putText_center(frame, predict_word, (0, 255, 0), 5)
 
 
+        cv2.putText(frame, str(id_frame), (25, 700), 
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
         # Show to screen
         cv2.imshow('OpenCV Feed', frame)
 
         # Break gracefully
         if cv2.waitKey(10) & 0xFF == ord('q'):
             break
+        id_frame = id_frame + 1
     cap.release()
     cv2.destroyAllWindows()
 
